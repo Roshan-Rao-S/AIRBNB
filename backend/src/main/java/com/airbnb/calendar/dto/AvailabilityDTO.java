@@ -29,6 +29,6 @@ public class AvailabilityDTO {
 
     @AssertTrue(message = "To date must be after from date")
     public boolean isValidDateRange() {
-        return fromDate == null || toDate == null || toDate.isAfter(fromDate);
+        return fromDate == null || toDate == null || !toDate.isBefore(fromDate);
     }
 }

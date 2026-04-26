@@ -54,12 +54,16 @@ public class SecurityConfig {
                 	).permitAll()
                 // PROTECTED APIs
                 .requestMatchers(
+                    HttpMethod.POST, "/properties/**"
+                ).authenticated()
+                .requestMatchers(
+                    HttpMethod.DELETE, "/properties/**"
+                ).authenticated()
+                .requestMatchers(
                     "/messages/**",
                     "/bookings/**",
                     "/reviews", 
-                    "/properties/**",
-                    "/calendar/block",
-                    "/properties/upload"
+                    "/calendar/block"
                 ).authenticated()
 
                 .anyRequest().authenticated()

@@ -58,6 +58,6 @@ public class BookingRequestDTO {
 
 	@AssertTrue(message = "Check-out date must be after check-in date")
 	public boolean isValidDateRange() {
-		return checkIn == null || checkOut == null || checkOut.isAfter(checkIn);
+		return checkIn == null || checkOut == null || !checkOut.isBefore(checkIn);
 	}
 }

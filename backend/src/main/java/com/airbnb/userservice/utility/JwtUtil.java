@@ -1,6 +1,7 @@
 package com.airbnb.userservice.utility;
 
 import java.util.Date;
+import java.nio.charset.StandardCharsets;
 
 import javax.crypto.SecretKey;
 
@@ -21,7 +22,7 @@ public class JwtUtil {
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.expiration-ms}") long expirationMs
     ) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMs = expirationMs;
     }
 
