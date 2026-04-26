@@ -15,7 +15,6 @@ import com.airbnb.userservice.exception.ResourceNotFoundException;
 import com.airbnb.userservice.exception.UnauthorizedException;
 import com.airbnb.userservice.repository.UserRepository;
 import com.airbnb.userservice.utility.JwtUtil;
-import com.airbnb.userservice.validation.UserValidation;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -42,7 +41,6 @@ public class UserServiceImpl implements UserService {
 			throw new BadRequestException("Email already exists");
 		}
 
-		UserValidation.validateUser(request);
 		User user = new User();
 		user.setName(request.getName());
 		user.setEmail(request.getEmail());

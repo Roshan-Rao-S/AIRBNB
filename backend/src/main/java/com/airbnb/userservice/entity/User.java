@@ -1,5 +1,12 @@
 package com.airbnb.userservice.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.airbnb.booking.entity.Booking;
+import com.airbnb.property.entity.Property;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -22,6 +29,14 @@ public class User {
 
     private boolean verified;
 
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Property> listings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Booking> bookings = new ArrayList<>();
+
     // GETTERS & SETTERS
 
     public Long getId() { return id; }
@@ -41,4 +56,10 @@ public class User {
 
     public boolean isVerified() { return verified; }
     public void setVerified(boolean verified) { this.verified = verified; }
+
+    public List<Property> getListings() { return listings; }
+    public void setListings(List<Property> listings) { this.listings = listings; }
+
+    public List<Booking> getBookings() { return bookings; }
+    public void setBookings(List<Booking> bookings) { this.bookings = bookings; }
 }

@@ -1,5 +1,10 @@
 package com.airbnb.booking.entity;
 
+import com.airbnb.property.entity.Property;
+import com.airbnb.userservice.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -11,8 +16,15 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userEmail;
-    private Long propertyId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "property_id")
+    @JsonIgnore
+    private Property property;
 
     private LocalDate checkIn;
     private LocalDate checkOut;
@@ -31,20 +43,20 @@ public class Booking {
         this.id = id;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Long getPropertyId() {
-        return propertyId;
+    public Property getProperty() {
+        return property;
     }
 
-    public void setPropertyId(Long propertyId) {
-        this.propertyId = propertyId;
+    public void setProperty(Property property) {
+        this.property = property;
     }
 
     public LocalDate getCheckIn() {
@@ -77,5 +89,15 @@ public class Booking {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @JsonProperty("userEmail")
+    public String getUserEmail() {
+        return user != null ? user.getEmail() : null;
+    }
+
+    @JsonProperty("propertyId")
+    public Long getPropertyId() {
+        return property != null ? property.getId() : null;
     }
 }

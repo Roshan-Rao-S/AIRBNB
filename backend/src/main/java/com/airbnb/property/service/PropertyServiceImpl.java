@@ -13,16 +13,19 @@ import com.airbnb.property.entity.Property;
 import com.airbnb.property.repository.PropertyRepository;
 import com.airbnb.userservice.exception.ResourceNotFoundException;
 import com.airbnb.userservice.exception.UnauthorizedException;
+import com.airbnb.userservice.repository.UserRepository;
 
 @Service
 public class PropertyServiceImpl implements PropertyService {
 
     private static final Logger logger = LoggerFactory.getLogger(PropertyServiceImpl.class);
     private final PropertyRepository propertyRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public PropertyServiceImpl(PropertyRepository propertyRepository) {
+    public PropertyServiceImpl(PropertyRepository propertyRepository, UserRepository userRepository) {
         this.propertyRepository = propertyRepository;
+        this.userRepository = userRepository;
     }
 
 
@@ -34,7 +37,8 @@ public class PropertyServiceImpl implements PropertyService {
         property.setTitle(dto.getTitle());
         property.setLocation(dto.getLocation());
         property.setPrice(dto.getPrice());
-        property.setOwnerEmail(email);
+        property.setOwner(userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found")));
 
         property.setImageUrl(dto.getImageUrl());
 
@@ -67,7 +71,7 @@ public class PropertyServiceImpl implements PropertyService {
    
     @Override
     public List<Property> getPropertiesByOwner(String email) {
-        return propertyRepository.findByOwnerEmail(email);
+        return propertyRepository.findByOwner_Email(email);
     }
 
     // 🔥 NEW: Delete property
@@ -77,7 +81,7 @@ public class PropertyServiceImpl implements PropertyService {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
-        if (!property.getOwnerEmail().equals(email)) {
+        if (property.getOwner() == null || !property.getOwner().getEmail().equals(email)) {
             throw new UnauthorizedException("Unauthorized");
         }
 

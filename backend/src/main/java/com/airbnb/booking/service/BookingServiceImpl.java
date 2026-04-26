@@ -15,6 +15,10 @@ import com.airbnb.calendar.dto.AvailabilityDTO;
 import com.airbnb.calendar.service.AvailabilityService;
 import com.airbnb.userservice.exception.BadRequestException;
 import com.airbnb.userservice.exception.ResourceNotFoundException;
+import com.airbnb.userservice.repository.UserRepository;
+import com.airbnb.property.entity.Property;
+import com.airbnb.property.repository.PropertyRepository;
+import com.airbnb.userservice.entity.User;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -22,14 +26,20 @@ public class BookingServiceImpl implements BookingService {
     private static final Logger logger = LoggerFactory.getLogger(BookingServiceImpl.class);
     private final BookingRepository bookingRepository;
     private final AvailabilityService availabilityService;
+    private final UserRepository userRepository;
+    private final PropertyRepository propertyRepository;
 
     @Autowired
     public BookingServiceImpl(
             BookingRepository bookingRepository,
-            AvailabilityService availabilityService
+            AvailabilityService availabilityService,
+            UserRepository userRepository,
+            PropertyRepository propertyRepository
     ) {
         this.bookingRepository = bookingRepository;
         this.availabilityService = availabilityService;
+        this.userRepository = userRepository;
+        this.propertyRepository = propertyRepository;
     }
 
 //    @Override
@@ -50,11 +60,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking createBooking(BookingRequestDTO dto, String email) {
 
-        // 🔥 VALIDATION
-        if (dto.getCheckIn().isAfter(dto.getCheckOut())) {
-            throw new BadRequestException("Invalid date range");
-        }
-
         // 🔥 CHECK AVAILABILITY FIRST
         AvailabilityDTO availabilityDTO = new AvailabilityDTO();
         availabilityDTO.setPropertyId(dto.getPropertyId());
@@ -68,9 +73,14 @@ public class BookingServiceImpl implements BookingService {
         }
 
         // ✅ CREATE BOOKING
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Property property = propertyRepository.findById(dto.getPropertyId())
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
+
         Booking booking = new Booking();
-        booking.setUserEmail(email);
-        booking.setPropertyId(dto.getPropertyId());
+        booking.setUser(user);
+        booking.setProperty(property);
         booking.setCheckIn(dto.getCheckIn());
         booking.setCheckOut(dto.getCheckOut());
         booking.setGuests(dto.getGuests());
@@ -102,7 +112,7 @@ public class BookingServiceImpl implements BookingService {
     public List<Booking> getUserBookings(String email) {
 
         List<Booking> list = new ArrayList<>();
-        bookingRepository.findByUserEmail(email).forEach(list::add);
+        bookingRepository.findByUser_Email(email).forEach(list::add);
 
         logger.debug("Fetched {} bookings for {}", list.size(), email);
         return list;
