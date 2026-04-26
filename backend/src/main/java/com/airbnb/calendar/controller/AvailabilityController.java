@@ -13,18 +13,22 @@ import com.airbnb.calendar.service.AvailabilityService;
 @RequestMapping("/calendar")
 public class AvailabilityController {
 
+    private final AvailabilityService service;
+
     @Autowired
-    private AvailabilityService service;
+    public AvailabilityController(AvailabilityService service) {
+        this.service = service;
+    }
 
     // block dates
     @PostMapping("/block")
-    public Availability block(@RequestBody AvailabilityDTO dto) {
+    public Availability block(@jakarta.validation.Valid @RequestBody AvailabilityDTO dto) {
         return service.blockDates(dto);
     }
 
     // check availability
     @PostMapping("/check")
-    public boolean check(@RequestBody AvailabilityDTO dto) {
+    public boolean check(@jakarta.validation.Valid @RequestBody AvailabilityDTO dto) {
         return service.isAvailable(dto.getPropertyId(), dto);
     }
 

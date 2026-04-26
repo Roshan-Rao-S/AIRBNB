@@ -22,8 +22,12 @@ import jakarta.validation.Valid;
 @RequestMapping("/users")
 public class UserController {
 
+	private final UserService userService;
+
 	@Autowired
-	private UserService userService;
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
 
 	@PostMapping("/register")
 	public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody UserRequestDTO request) {
@@ -34,7 +38,7 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponseDTO> loginUser(@RequestBody LoginRequestDTO request) {
+	public ResponseEntity<LoginResponseDTO> loginUser(@Valid @RequestBody LoginRequestDTO request) {
 
 	    LoginResponseDTO response = userService.loginUser(request);
 

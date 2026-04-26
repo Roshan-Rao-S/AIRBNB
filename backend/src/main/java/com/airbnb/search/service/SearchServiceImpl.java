@@ -11,8 +11,12 @@ import java.util.List;
 @Service
 public class SearchServiceImpl implements SearchService {
 
+    private final SearchRepository repository;
+
     @Autowired
-    private SearchRepository repository;
+    public SearchServiceImpl(SearchRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public List<Property> searchByLocation(String location) {

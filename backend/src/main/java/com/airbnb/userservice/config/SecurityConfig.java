@@ -3,6 +3,7 @@ package com.airbnb.userservice.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -40,13 +41,13 @@ public class SecurityConfig {
                     "/users/login",
                     "/actuator/health",
                     "/search/**",
-                    "/properties/**",
                     "/reviews/*",
                     "/images/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/v3/api-docs/**"
                 ).permitAll()
+                .requestMatchers(HttpMethod.GET, "/properties/**").permitAll()
                 .requestMatchers(
                 	    "/calendar/check",
                 	    "/calendar/*"
@@ -56,7 +57,7 @@ public class SecurityConfig {
                     "/messages/**",
                     "/bookings/**",
                     "/reviews", 
-//                    "/calendar/**",
+                    "/properties/**",
                     "/calendar/block",
                     "/properties/upload"
                 ).authenticated()

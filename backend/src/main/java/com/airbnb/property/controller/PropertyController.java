@@ -24,12 +24,16 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/properties")
 public class PropertyController {
 
+	private final PropertyService propertyService;
+
 	@Autowired
-	private PropertyService propertyService;
+	public PropertyController(PropertyService propertyService) {
+		this.propertyService = propertyService;
+	}
 
 	// 🔐 Add property (protected)
 	@PostMapping
-	public ResponseEntity<Property> addProperty(@RequestBody PropertyDTO dto, HttpServletRequest request) {
+	public ResponseEntity<Property> addProperty(@jakarta.validation.Valid @RequestBody PropertyDTO dto, HttpServletRequest request) {
 
 		String email = (String) request.getAttribute("email");
 

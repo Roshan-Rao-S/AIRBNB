@@ -1,9 +1,17 @@
 package com.airbnb.property.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+
 public class PropertyDTO {
 
+    @NotBlank(message = "Title is required")
     private String title;
+
+    @NotBlank(message = "Location is required")
     private String location;
+
+    @Min(value = 1, message = "Price must be greater than 0")
     private double price;
 
     private String imageUrl;

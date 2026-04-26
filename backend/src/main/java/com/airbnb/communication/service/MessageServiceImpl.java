@@ -12,8 +12,12 @@ import com.airbnb.communication.repository.MessageRepository;
 @Service
 public class MessageServiceImpl implements MessageService {
 
+    private final MessageRepository messageRepository;
+
     @Autowired
-    private MessageRepository messageRepository;
+    public MessageServiceImpl(MessageRepository messageRepository) {
+        this.messageRepository = messageRepository;
+    }
 
     @Override
     public Message sendMessage(MessageDTO dto, String senderEmail) {

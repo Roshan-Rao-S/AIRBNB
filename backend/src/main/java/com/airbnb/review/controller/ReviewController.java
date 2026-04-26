@@ -23,11 +23,15 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/reviews")
 public class ReviewController {
 
+    private final ReviewService reviewService;
+
     @Autowired
-    private ReviewService reviewService;
+    public ReviewController(ReviewService reviewService) {
+        this.reviewService = reviewService;
+    }
 
     @PostMapping
-    public Review addReview(@RequestBody ReviewDTO dto, HttpServletRequest request) {
+    public Review addReview(@jakarta.validation.Valid @RequestBody ReviewDTO dto, HttpServletRequest request) {
 
         String email = (String) request.getAttribute("email");
 

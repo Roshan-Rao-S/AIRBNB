@@ -57,11 +57,14 @@ import com.airbnb.userservice.exception.ResourceNotFoundException;
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
-    @Autowired
-    private ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
+    private final PropertyRepository propertyRepository;
 
     @Autowired
-    private PropertyRepository propertyRepository;
+    public ReviewServiceImpl(ReviewRepository reviewRepository, PropertyRepository propertyRepository) {
+        this.reviewRepository = reviewRepository;
+        this.propertyRepository = propertyRepository;
+    }
 
     @Override
     public Review addReview(ReviewDTO dto, String email) {
