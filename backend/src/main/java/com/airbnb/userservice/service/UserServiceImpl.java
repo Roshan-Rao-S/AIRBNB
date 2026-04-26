@@ -1,6 +1,8 @@
 package com.airbnb.userservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.airbnb.userservice.dto.LoginRequestDTO;
@@ -8,18 +10,38 @@ import com.airbnb.userservice.dto.LoginResponseDTO;
 import com.airbnb.userservice.dto.UserDTO;
 import com.airbnb.userservice.dto.UserRequestDTO;
 import com.airbnb.userservice.entity.User;
+import com.airbnb.userservice.exception.BadRequestException;
+import com.airbnb.userservice.exception.ResourceNotFoundException;
+import com.airbnb.userservice.exception.UnauthorizedException;
 import com.airbnb.userservice.repository.UserRepository;
+import com.airbnb.userservice.utility.JwtUtil;
 import com.airbnb.userservice.validation.UserValidation;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+	private final UserRepository userRepository;
+	private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+	private final JwtUtil jwtUtil;
+
 	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+	public UserServiceImpl(
+			UserRepository userRepository,
+			org.springframework.security.crypto.password.PasswordEncoder passwordEncoder,
+			JwtUtil jwtUtil
+	) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.jwtUtil = jwtUtil;
+	}
+
 	@Override
 	public UserDTO registerUser(UserRequestDTO request) {
+		if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+			throw new BadRequestException("Email already exists");
+		}
+
 		UserValidation.validateUser(request);
 		User user = new User();
 		user.setName(request.getName());
@@ -37,6 +59,7 @@ public class UserServiceImpl implements UserService {
 		dto.setRole(savedUser.getRole().name());
 		dto.setVerified(savedUser.isVerified());
 
+		logger.info("Registered user with email {}", savedUser.getEmail());
 		return dto;
 	}
 	
@@ -45,23 +68,22 @@ public class UserServiceImpl implements UserService {
 	public LoginResponseDTO loginUser(LoginRequestDTO request){
 
 	    User user = userRepository.findByEmail(request.getEmail())
-	            .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+	            .orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
 
 	    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-	        throw new RuntimeException("Invalid email or password");
+	        throw new UnauthorizedException("Invalid email or password");
 	    }
 
-	    // generate token
-	    String token = com.airbnb.userservice.utility.JwtUtil.generateToken(user.getEmail());
+	    String token = jwtUtil.generateToken(user.getEmail());
 
-	    // return token response
+	    logger.info("User logged in: {}", user.getEmail());
 	    return new LoginResponseDTO(token);
 	}
 	@Override
 	public UserDTO getUserProfile(String email) {
 
 	    User user = userRepository.findByEmail(email)
-	            .orElseThrow(() -> new RuntimeException("User not found"));
+	            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
 	    UserDTO dto = new UserDTO();
 	    dto.setId(user.getId());
@@ -70,6 +92,7 @@ public class UserServiceImpl implements UserService {
 	    dto.setRole(user.getRole().name());
 	    dto.setVerified(user.isVerified());
 
+	    logger.debug("Fetched profile for {}", email);
 	    return dto;
 	}
 }

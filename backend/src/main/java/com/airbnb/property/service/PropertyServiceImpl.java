@@ -4,17 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.airbnb.property.dto.PropertyDTO;
 import com.airbnb.property.entity.Property;
 import com.airbnb.property.repository.PropertyRepository;
+import com.airbnb.userservice.exception.ResourceNotFoundException;
+import com.airbnb.userservice.exception.UnauthorizedException;
 
 @Service
 public class PropertyServiceImpl implements PropertyService {
 
+    private static final Logger logger = LoggerFactory.getLogger(PropertyServiceImpl.class);
+    private final PropertyRepository propertyRepository;
+
     @Autowired
-    private PropertyRepository propertyRepository;
+    public PropertyServiceImpl(PropertyRepository propertyRepository) {
+        this.propertyRepository = propertyRepository;
+    }
 
 
     @Override
@@ -33,7 +42,9 @@ public class PropertyServiceImpl implements PropertyService {
         property.setRating(0.0);
         property.setReviewCount(0);
 
-        return propertyRepository.save(property);
+        Property saved = propertyRepository.save(property);
+        logger.info("Property created with id {} by {}", saved.getId(), email);
+        return saved;
     }
 
     @Override
@@ -49,7 +60,7 @@ public class PropertyServiceImpl implements PropertyService {
     @Override
     public Property getPropertyById(Long id) {
         return propertyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
     }
     
  // 🔥 NEW: Get properties of logged-in host
@@ -64,12 +75,13 @@ public class PropertyServiceImpl implements PropertyService {
     public void deleteProperty(Long id, String email) {
 
         Property property = propertyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         if (!property.getOwnerEmail().equals(email)) {
-            throw new RuntimeException("Unauthorized");
+            throw new UnauthorizedException("Unauthorized");
         }
 
         propertyRepository.deleteById(id);
+        logger.info("Property {} deleted by {}", id, email);
     }
 }

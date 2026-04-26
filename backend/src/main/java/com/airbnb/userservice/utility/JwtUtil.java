@@ -4,31 +4,41 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Claims;
 
+@Component
 public class JwtUtil {
 
-    private static final SecretKey SECRET_KEY =
-            Keys.hmacShaKeyFor("mysecretkeymysecretkeymysecretkey".getBytes());
+    private final SecretKey secretKey;
+    private final long expirationMs;
 
-    // 🔐 Generate Token
-    public static String generateToken(String email) {
+    public JwtUtil(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration-ms}") long expirationMs
+    ) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expirationMs = expirationMs;
+    }
+
+    public String generateToken(String email) {
 
         return Jwts.builder()
-                .setSubject(email)   // ✅ FIXED
+                .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(SECRET_KEY)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+                .signWith(secretKey)
                 .compact();
     }
 
-    // 🔍 Extract Email
-    public static String extractEmail(String token) {
+    public String extractEmail(String token) {
 
-        Claims claims = Jwts.parserBuilder()   // ✅ FIXED
-                .setSigningKey(SECRET_KEY)
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

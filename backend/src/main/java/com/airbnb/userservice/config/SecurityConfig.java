@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/users/register",
                     "/users/login",
+                    "/actuator/health",
                     "/search/**",
                     "/properties/**",
                     "/reviews/*",

@@ -1,17 +1,30 @@
 package com.airbnb.userservice.exception;
 
+import java.time.Instant;
 import java.util.List;
 
 public class ErrorResponse {
 
+    private Instant timestamp;
+    private int status;
+    private String error;
     private String message;
-    private List<String> errors;
+    private String path;
+    private List<String> details;
 
-    public ErrorResponse(String message, List<String> errors) {
+    public ErrorResponse(Instant timestamp, int status, String error, String message, String path, List<String> details) {
+        this.timestamp = timestamp;
+        this.status = status;
+        this.error = error;
         this.message = message;
-        this.errors = errors;
+        this.path = path;
+        this.details = details;
     }
 
+    public Instant getTimestamp() { return timestamp; }
+    public int getStatus() { return status; }
+    public String getError() { return error; }
     public String getMessage() { return message; }
-    public List<String> getErrors() { return errors; }
+    public String getPath() { return path; }
+    public List<String> getDetails() { return details; }
 }

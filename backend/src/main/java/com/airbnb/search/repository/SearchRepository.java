@@ -1,11 +1,11 @@
 package com.airbnb.search.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import com.airbnb.property.entity.Property;
 
 import java.util.List;
 
-public interface SearchRepository extends CrudRepository<Property, Long> {
+public interface SearchRepository extends JpaRepository<Property, Long> {
 
     List<Property> findByLocationContainingIgnoreCase(String location);
 
