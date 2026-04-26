@@ -2,6 +2,7 @@ package com.airbnb.calendar.dto;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 
@@ -25,4 +26,9 @@ public class AvailabilityDTO {
 
     public LocalDate getToDate() { return toDate; }
     public void setToDate(LocalDate toDate) { this.toDate = toDate; }
+
+    @AssertTrue(message = "To date must be after from date")
+    public boolean isValidDateRange() {
+        return fromDate == null || toDate == null || toDate.isAfter(fromDate);
+    }
 }

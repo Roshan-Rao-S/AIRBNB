@@ -2,6 +2,7 @@ package com.airbnb.booking.dto;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -53,5 +54,10 @@ public class BookingRequestDTO {
 
 	public void setGuests(int guests) {
 		this.guests = guests;
+	}
+
+	@AssertTrue(message = "Check-out date must be after check-in date")
+	public boolean isValidDateRange() {
+		return checkIn == null || checkOut == null || checkOut.isAfter(checkIn);
 	}
 }
