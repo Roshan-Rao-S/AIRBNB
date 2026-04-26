@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_BASE_URL } from "../api/api";
 
 const UploadImage = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -10,7 +11,7 @@ const UploadImage = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("http://localhost:8080/properties/upload", {
+    const res = await fetch(`${API_BASE_URL}/properties/upload`, {
       method: "POST",
       body: formData,
     });
@@ -38,7 +39,7 @@ const UploadImage = () => {
         <div className="mt-3">
           <p>Saved as: {imagePath}</p>
           <img
-            src={`http://localhost:8080/${imagePath}`}
+            src={`${API_BASE_URL}/${imagePath}`}
             alt="uploaded"
             style={{ width: "300px" }}
           />

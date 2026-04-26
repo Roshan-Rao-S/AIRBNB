@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { registerUser } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -16,8 +17,9 @@ const Register = () => {
       await registerUser(form);
       alert("Registered successfully");
       navigate("/login");
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Error");
+    } catch (err) {
+      const error = err as AxiosError<{ message?: string }>;
+      alert(error.response?.data?.message || "Error");
     }
   };
 

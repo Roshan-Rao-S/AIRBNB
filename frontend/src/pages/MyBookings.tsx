@@ -1,21 +1,16 @@
 import { useEffect, useState } from "react";
 import { getMyBookings, cancelBooking } from "../api/bookingApi";
-import { getPropertyById, Property } from "../api/propertyApi";
+import { API_BASE_URL } from "../api/api";
+import { getPropertyById } from "../api/propertyApi";
 import ToastMessage from "../components/ToastMessage";
+import { Booking, Property } from "../types/models";
 
-interface Booking {
-  id: number;
-  propertyId: number;
-  checkIn: string;
-  checkOut: string;
-  guests: number;
-  status: string;
-
-  property?: Property; // ✅ NEW
+interface BookingWithProperty extends Booking {
+  property?: Property;
 }
 
 const MyBookings = () => {
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<BookingWithProperty[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [toast, setToast] = useState({
@@ -30,7 +25,7 @@ const MyBookings = () => {
       const data = await getMyBookings();
 
       const enriched = await Promise.all(
-        data.map(async (b: Booking) => {
+        data.map(async (b) => {
           try {
             const property = await getPropertyById(b.propertyId);
             return { ...b, property };
@@ -104,7 +99,7 @@ const MyBookings = () => {
                   <img
                     src={
                       b.property.imageUrl
-                        ? `http://localhost:8080/${b.property.imageUrl}`
+                        ? `${API_BASE_URL}/${b.property.imageUrl}`
                         : "https://via.placeholder.com/300"
                     }
                     alt="property"

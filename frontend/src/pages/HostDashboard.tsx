@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { addProperty, getHostProperties, deleteProperty } from "../api/propertyApi";
+import { API_BASE_URL } from "../api/api";
 import ToastMessage from "../components/ToastMessage";
+import { Property } from "../types/models";
 
 const HostDashboard = () => {
   const [form, setForm] = useState({
@@ -10,7 +12,7 @@ const HostDashboard = () => {
     imageUrl: "",
   });
 
-  const [properties, setProperties] = useState<any[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [toast, setToast] = useState({
@@ -143,7 +145,8 @@ const HostDashboard = () => {
             <div key={p.id} className="col-md-4 mb-3">
               <div className="card">
                 <img
-                  src={`http://localhost:8080/${p.imageUrl}`}
+                  src={`${API_BASE_URL}/${p.imageUrl}`}
+                  alt={p.title}
                   style={{ height: "200px", objectFit: "cover" }}
                 />
 
