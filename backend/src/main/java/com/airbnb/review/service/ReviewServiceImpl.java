@@ -52,15 +52,19 @@ import com.airbnb.property.repository.PropertyRepository;
 import com.airbnb.review.dto.ReviewDTO;
 import com.airbnb.review.entity.Review;
 import com.airbnb.review.repository.ReviewRepository;
+import com.airbnb.userservice.exception.ResourceNotFoundException;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
-    @Autowired
-    private ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
+    private final PropertyRepository propertyRepository;
 
     @Autowired
-    private PropertyRepository propertyRepository;
+    public ReviewServiceImpl(ReviewRepository reviewRepository, PropertyRepository propertyRepository) {
+        this.reviewRepository = reviewRepository;
+        this.propertyRepository = propertyRepository;
+    }
 
     @Override
     public Review addReview(ReviewDTO dto, String email) {
@@ -86,7 +90,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         // 3. Update property
         Property property = propertyRepository.findById(dto.getPropertyId())
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         property.setRating(avgRating);
         property.setReviewCount(count);

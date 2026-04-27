@@ -16,12 +16,16 @@ import java.util.List;
 @RequestMapping("/bookings")
 public class BookingController {
 
+    private final BookingService bookingService;
+
     @Autowired
-    private BookingService bookingService;
+    public BookingController(BookingService bookingService) {
+        this.bookingService = bookingService;
+    }
 
     @PostMapping
     public ResponseEntity<Booking> createBooking(
-            @RequestBody BookingRequestDTO dto,
+            @jakarta.validation.Valid @RequestBody BookingRequestDTO dto,
             HttpServletRequest request) {
 
         String email = (String) request.getAttribute("email");

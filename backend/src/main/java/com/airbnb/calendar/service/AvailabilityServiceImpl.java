@@ -12,8 +12,12 @@ import com.airbnb.calendar.repository.AvailabilityRepository;
 @Service
 public class AvailabilityServiceImpl implements AvailabilityService {
 
+    private final AvailabilityRepository repository;
+
     @Autowired
-    private AvailabilityRepository repository;
+    public AvailabilityServiceImpl(AvailabilityRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public Availability blockDates(AvailabilityDTO dto) {

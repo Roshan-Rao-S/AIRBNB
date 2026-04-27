@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { addReview } from "../api/reviewApi";
 
-const ReviewForm = ({ propertyId, onSuccess }: any) => {
+interface ReviewFormProps {
+  propertyId: number;
+  onSuccess: () => void;
+}
+
+const ReviewForm = ({ propertyId, onSuccess }: ReviewFormProps) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
 

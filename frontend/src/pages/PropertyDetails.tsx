@@ -2,23 +2,22 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getPropertyById } from "../api/propertyApi";
 import { getReviews } from "../api/reviewApi";
+import { API_BASE_URL } from "../api/api";
 import ReviewForm from "../components/ReviewForm";
 import BookingForm from "../components/BookingForm";
-interface Review {
-  rating: number;
-  comment: string;
-}
+import { Property, Review } from "../types/models";
 
 const PropertyDetails = () => {
   const { id } = useParams<{ id: string }>();
 
-  const [property, setProperty] = useState<any>(null);
+  const [property, setProperty] = useState<Property | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const propertyId = Number(id);
 
   // ✅ Load reviews
   const loadReviews = () => {
-    if (id) {
-      getReviews(id).then(setReviews);
+    if (Number.isFinite(propertyId)) {
+      getReviews(propertyId).then(setReviews);
     }
   };
 
@@ -31,7 +30,7 @@ const PropertyDetails = () => {
       const propertyData = await getPropertyById(Number(id));
       setProperty(propertyData);
 
-      const reviewData = await getReviews(id);
+      const reviewData = await getReviews(Number(id));
       setReviews(reviewData);
     } catch (err) {
       console.error("Error loading property/reviews", err);
@@ -41,6 +40,10 @@ const PropertyDetails = () => {
   fetchData();
 }, [id]);
 
+  if (!Number.isFinite(propertyId)) {
+    return <h4 className="text-center mt-5">Invalid property</h4>;
+  }
+
   if (!property) return <h4 className="text-center mt-5">Loading...</h4>;
 
   return (
@@ -48,7 +51,7 @@ const PropertyDetails = () => {
       <h2>{property.title}</h2>
 
       <img
-        src={`${process.env.REACT_APP_API_URL}/${property.imageUrl}`}
+        src={`${API_BASE_URL}/${property.imageUrl}`}
         style={{ width: "100%", height: "400px", objectFit: "cover" }}
         alt={property.title}
       />
@@ -71,8 +74,8 @@ const PropertyDetails = () => {
       ))}
 
       {/* 📝 Add Review */}
-      <ReviewForm propertyId={id} onSuccess={loadReviews} />
-      <BookingForm propertyId={Number(id)} />
+      <ReviewForm propertyId={propertyId} onSuccess={loadReviews} />
+      <BookingForm propertyId={propertyId} />
     </div>
   );
 };

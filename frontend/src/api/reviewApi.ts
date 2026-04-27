@@ -1,20 +1,14 @@
 import API from "./api";
-
-export interface Review {
-  id: number;
-  propertyId: number;
-  rating: number;
-  comment: string;
-}
+import { Review } from "../types/models";
 
 // ✅ Get reviews
-export const getReviews = async (propertyId: string) => {
-  const res = await API.get(`/reviews/${propertyId}`);
+export const getReviews = async (propertyId: number): Promise<Review[]> => {
+  const res = await API.get<Review[]>(`/reviews/${propertyId}`);
   return res.data;
 };
 
 // ✅ Add review (protected)
-export const addReview = async (data: any) => {
-  const res = await API.post("/reviews", data);
+export const addReview = async (data: Review): Promise<Review> => {
+  const res = await API.post<Review>("/reviews", data);
   return res.data;
 };

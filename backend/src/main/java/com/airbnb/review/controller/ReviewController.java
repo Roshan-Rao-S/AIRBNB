@@ -3,6 +3,8 @@ package com.airbnb.review.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,11 +25,16 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/reviews")
 public class ReviewController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ReviewController.class);
+    private final ReviewService reviewService;
+
     @Autowired
-    private ReviewService reviewService;
+    public ReviewController(ReviewService reviewService) {
+        this.reviewService = reviewService;
+    }
 
     @PostMapping
-    public Review addReview(@RequestBody ReviewDTO dto, HttpServletRequest request) {
+    public Review addReview(@jakarta.validation.Valid @RequestBody ReviewDTO dto, HttpServletRequest request) {
 
         String email = (String) request.getAttribute("email");
 
@@ -55,7 +62,7 @@ public class ReviewController {
             return ResponseEntity.ok("images/" + fileName);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Image upload failed", e);
             return ResponseEntity.status(500).body("Upload failed");
         }
     }

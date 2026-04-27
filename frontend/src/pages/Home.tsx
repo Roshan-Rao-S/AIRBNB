@@ -1,17 +1,9 @@
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "../api/api";
 import { getAllProperties } from "../api/propertyApi";
 import SearchBar from "../components/SearchBar";
 import { useNavigate } from "react-router-dom";
-
-interface Property {
-  id: number;
-  title: string;
-  location: string;
-  price: number;
-  imageUrl: string;
-  rating: number;
-  reviewCount: number;
-}
+import { Property } from "../types/models";
 
 const Home = () => {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -56,7 +48,7 @@ const Home = () => {
                 <img
                   src={
                     p.imageUrl
-                      ? `${process.env.REACT_APP_API_URL}/${p.imageUrl}`
+                      ? `${API_BASE_URL}/${p.imageUrl}`
                       : "https://via.placeholder.com/300"
                   }
                   alt={p.title}

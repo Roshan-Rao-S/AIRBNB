@@ -1,4 +1,5 @@
 import API from "./api";
+import { Booking } from "../types/models";
 
 export interface BookingRequest {
   propertyId: number;
@@ -8,14 +9,14 @@ export interface BookingRequest {
 }
 
 // ✅ CREATE
-export const createBooking = async (data: BookingRequest) => {
-  const res = await API.post("/bookings", data);
+export const createBooking = async (data: BookingRequest): Promise<Booking> => {
+  const res = await API.post<Booking>("/bookings", data);
   return res.data;
 };
 
 // ✅ GET USER BOOKINGS
-export const getMyBookings = async () => {
-  const res = await API.get("/bookings");
+export const getMyBookings = async (): Promise<Booking[]> => {
+  const res = await API.get<Booking[]>("/bookings");
   return res.data;
 };
 

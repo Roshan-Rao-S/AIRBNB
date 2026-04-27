@@ -12,8 +12,12 @@ import java.util.List;
 @RequestMapping("/search")
 public class SearchController {
 
+    private final SearchService service;
+
     @Autowired
-    private SearchService service;
+    public SearchController(SearchService service) {
+        this.service = service;
+    }
 
     // 🔍 search by location
     @GetMapping("/location")

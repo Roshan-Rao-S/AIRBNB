@@ -13,7 +13,7 @@ const ToastMessage = ({ message, type, show, onClose }: Props) => {
       const timer = setTimeout(onClose, 3000);
       return () => clearTimeout(timer);
     }
-  }, [show]);
+  }, [show, onClose]);
 
   if (!show) return null;
 

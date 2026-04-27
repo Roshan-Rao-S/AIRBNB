@@ -2,11 +2,24 @@ package com.airbnb.booking.dto;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 public class BookingRequestDTO {
 
+	@NotNull(message = "Property id is required")
 	private Long propertyId;
+
+	@NotNull(message = "Check-in date is required")
+	@FutureOrPresent(message = "Check-in date must be today or in the future")
 	private LocalDate checkIn;
+
+	@NotNull(message = "Check-out date is required")
 	private LocalDate checkOut;
+
+	@Min(value = 1, message = "At least one guest is required")
 	private int guests;
 
 	// ✅ GETTERS & SETTERS
@@ -41,5 +54,10 @@ public class BookingRequestDTO {
 
 	public void setGuests(int guests) {
 		this.guests = guests;
+	}
+
+	@AssertTrue(message = "Check-out date must be after check-in date")
+	public boolean isValidDateRange() {
+		return checkIn == null || checkOut == null || !checkOut.isBefore(checkIn);
 	}
 }

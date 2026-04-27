@@ -15,11 +15,15 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/messages")
 public class MessageController {
 
+    private final MessageService messageService;
+
     @Autowired
-    private MessageService messageService;
+    public MessageController(MessageService messageService) {
+        this.messageService = messageService;
+    }
 
     @PostMapping
-    public Message sendMessage(@RequestBody MessageDTO dto,
+    public Message sendMessage(@jakarta.validation.Valid @RequestBody MessageDTO dto,
                                HttpServletRequest request) {
 
         String email = (String) request.getAttribute("email");
