@@ -3,6 +3,7 @@ package com.airbnb.userservice.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.airbnb.userservice.dto.LoginRequestDTO;
@@ -37,10 +38,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDTO registerUser(UserRequestDTO request) {
-		if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-			throw new BadRequestException("Email already exists");
-		}
-
 		User user = new User();
 		user.setName(request.getName());
 		user.setEmail(request.getEmail());
@@ -48,7 +45,12 @@ public class UserServiceImpl implements UserService {
 		user.setRole(com.airbnb.userservice.entity.Role.USER);
 		user.setVerified(false);
 
-		User savedUser = userRepository.save(user);
+		User savedUser;
+		try {
+			savedUser = userRepository.save(user);
+		} catch (DataIntegrityViolationException ex) {
+			throw new BadRequestException("Email already exists");
+		}
 
 		UserDTO dto = new UserDTO();
 		dto.setId(savedUser.getId());
