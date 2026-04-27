@@ -56,7 +56,7 @@ public class PropertyServiceImpl implements PropertyService {
 
         List<Property> list = new ArrayList<>();
 
-        propertyRepository.findAll().forEach(list::add);
+        propertyRepository.findAllWithOwner().forEach(list::add);
 
         return list;
     }

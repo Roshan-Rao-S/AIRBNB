@@ -5,13 +5,14 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.airbnb.property.entity.Property;
 
 public interface PropertyRepository extends JpaRepository<Property, Long> {
-	 @Override
 	 @EntityGraph(attributePaths = {"owner"})
-	 List<Property> findAll();
+	 @Query("select p from Property p")
+	 List<Property> findAllWithOwner();
 
 	 @Override
 	 @EntityGraph(attributePaths = {"owner"})
